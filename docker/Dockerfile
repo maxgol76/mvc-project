@@ -10,6 +10,10 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install zip xml pdo pdo_mysql mysqli \
     && docker-php-ext-enable pdo_mysql
 
+# Install Xdebug
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -31,6 +35,9 @@ RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
 # Copy entrypoint script and set execute permissions
 COPY docker/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Copy Xdebug configuration
+COPY docker/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # Expose port 80
 EXPOSE 80
